@@ -41,19 +41,19 @@ export default function ProductDetails() {
         setIsLoading(true);
 
         console.log("OPENING PRODUCT ID:", id);
-        const product = await axios.get(`http://localhost:5000/product/${id}`);
+        const product = await axios.get(`https://myntra-backend-fn7s.onrender.com/product/${id}`);
 
         setproduct(product.data);
         await addLocalRecentlyViewed(String(id));
 
         if (user?._id) {
-          await axios.post("http://localhost:5000/api/recently-viewed", {
+          await axios.post("https://myntra-backend-fn7s.onrender.com/api/recently-viewed", {
             userId: user._id,
             productId: id,
           });
 
           const recRes = await axios.get(
-            `http://localhost:5000/recommendations/${user._id}?currentProductId=${id}`
+            `https://myntra-backend-fn7s.onrender.com/recommendations/${user._id}?currentProductId=${id}`
           );
 
           setRecommendations(recRes.data.recommendations || []);
@@ -104,7 +104,7 @@ export default function ProductDetails() {
     }
 
     try {
-      await axios.post("http://localhost:5000/wishlist", {
+      await axios.post("https://myntra-backend-fn7s.onrender.com/wishlist", {
         userId: user._id,
         productId: id,
       });
@@ -130,7 +130,7 @@ export default function ProductDetails() {
     try {
       setLoading(true);
 
-      await axios.post("http://localhost:5000/bag", {
+      await axios.post("https://myntra-backend-fn7s.onrender.com/bag", {
         userId: user._id,
         productId: id,
         size: selectedSize,

@@ -28,7 +28,7 @@ export const registerForPushNotifications = async (userId: string) => {
     const tokenData = await Notifications.getExpoPushTokenAsync();
     const token = tokenData.data;
 
-    await axios.post("http://localhost:5000/notification/register-token", {
+    await axios.post("https://myntra-backend-fn7s.onrender.com/notification/register-token", {
       userId,
       token,
       platform: Platform.OS,

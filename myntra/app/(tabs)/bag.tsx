@@ -33,7 +33,7 @@ export default function Bag() {
       try {
         setIsLoading(true);
 
-        const bag = await axios.get(`http://localhost:5000/bag/${user._id}`);
+        const bag = await axios.get(`https://myntra-backend-fn7s.onrender.com/bag/${user._id}`);
 
         setActiveItems(bag.data.activeItems || []);
         setSavedItems(bag.data.savedItems || []);
@@ -48,7 +48,7 @@ export default function Bag() {
 
   const handledelete = async (itemid: any) => {
     try {
-      await axios.delete(`http://localhost:5000/bag/${itemid}`);
+      await axios.delete(`https://myntra-backend-fn7s.onrender.com/bag/${itemid}`);
       fetchproduct();
     } catch (error) {
       console.log(error);
@@ -57,7 +57,7 @@ export default function Bag() {
 
   const saveForLater = async (itemId: string) => {
     try {
-      await axios.patch(`http://localhost:5000/bag/${itemId}/save-for-later`);
+      await axios.patch(`https://myntra-backend-fn7s.onrender.com/bag/${itemId}/save-for-later`);
       fetchproduct();
     } catch (error) {
       console.log(error);
@@ -66,7 +66,7 @@ export default function Bag() {
 
   const moveToCart = async (itemId: string) => {
     try {
-      await axios.patch(`http://localhost:5000/bag/${itemId}/move-to-cart`);
+      await axios.patch(`https://myntra-backend-fn7s.onrender.com/bag/${itemId}/move-to-cart`);
       fetchproduct();
     } catch (error) {
       console.log(error);
@@ -128,7 +128,7 @@ export default function Bag() {
       return;
     }
 
-    await axios.patch(`http://localhost:5000/bag/${item._id}/quantity`, {
+    await axios.patch(`https://myntra-backend-fn7s.onrender.com/bag/${item._id}/quantity`, {
       quantity: newQuantity,
       version: item.version,
     });

@@ -32,7 +32,7 @@ export default function Wishlist() {
         setIsLoading(true);
 
         const bag = await axios.get(
-          `http://localhost:5000/wishlist/${user._id}`
+          `https://myntra-backend-fn7s.onrender.com/wishlist/${user._id}`
         );
 
         setwishlist(bag.data);
@@ -46,7 +46,7 @@ export default function Wishlist() {
 
   const handledelete = async (itemid: any) => {
     try {
-      await axios.delete(`http://localhost:5000/wishlist/${itemid}`);
+      await axios.delete(`https://myntra-backend-fn7s.onrender.com/wishlist/${itemid}`);
       fetchproduct();
     } catch (error) {
       console.log(error);

@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     // 👉 Replace with your real API URL
-    const res = await axios.post("http://localhost:5000/user/login", {
+    const res = await axios.post("https://myntra-backend-fn7s.onrender.com/user/login", {
       email,
       password,
     });
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 if (localHistory.length > 0) {
   await axios.post(
-    "http://localhost:5000/api/recently-viewed/merge",
+    "https://myntra-backend-fn7s.onrender.com/api/recently-viewed/merge",
     {
       userId: data._id,
       localHistory,
@@ -67,7 +67,7 @@ if (localHistory.length > 0) {
   };
   const Signup = async (fullName: string, email: string, password: string) => {
     // 👉 Replace with your real API URL
-    const res = await axios.post("http://localhost:5000/user/signup", {
+    const res = await axios.post("https://myntra-backend-fn7s.onrender.com/user/signup", {
       fullName,
       email,
       password,

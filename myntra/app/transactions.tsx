@@ -31,7 +31,7 @@ export default function Transactions() {
     try {
       setLoading(true);
 
-      let url = `http://localhost:5000/transaction/user/${user._id}?page=${page}&limit=${limit}&sortField=paidAt&sortOrder=${sortOrder}`;
+      let url = `https://myntra-backend-fn7s.onrender.com/transaction/user/${user._id}?page=${page}&limit=${limit}&sortField=paidAt&sortOrder=${sortOrder}`;
 
       if (status) {
         url += `&status=${status}`;
@@ -54,11 +54,11 @@ export default function Transactions() {
 
   const downloadCSV = () => {
     if (!user) return;
-    Linking.openURL(`http://localhost:5000/transaction/export/csv/${user._id}`);
+    Linking.openURL(`https://myntra-backend-fn7s.onrender.com/transaction/export/csv/${user._id}`);
   };
 
   const downloadReceipt = (transactionId: string) => {
-    Linking.openURL(`http://localhost:5000/transaction/receipt/${transactionId}`);
+    Linking.openURL(`https://myntra-backend-fn7s.onrender.com/transaction/receipt/${transactionId}`);
   };
 
   if (!user) {

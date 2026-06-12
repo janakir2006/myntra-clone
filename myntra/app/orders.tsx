@@ -37,7 +37,7 @@ export default function Orders() {
           setIsLoading(true);
 
           const product = await axios.get(
-            `http://localhost:5000/order/user/${user._id}`
+            `https://myntra-backend-fn7s.onrender.com/order/user/${user._id}`
           );
 
           setorder(product.data);
