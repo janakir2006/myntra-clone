@@ -1,4 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
+import { useAppTheme } from "@/context/ThemeContext";
 import axios from "axios";
 import { useRouter } from "expo-router";
 import { Heart, Trash2 } from "lucide-react-native";
@@ -13,72 +14,71 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-// const wishlistItems = [
-//   {
-//     id: 1,
-//     name: "Premium Cotton T-Shirt",
-//     brand: "H&M",
-//     price: "₹799",
-//     discount: "40% OFF",
-//     image:
-//       "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&auto=format&fit=crop",
-//   },
-//   {
-//     id: 2,
-//     name: "Slim Fit Denim Jacket",
-//     brand: "Levis",
-//     price: "₹2999",
-//     discount: "30% OFF",
-//     image:
-//       "https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?w=500&auto=format&fit=crop",
-//   },
-// ];
 export default function Wishlist() {
   const router = useRouter();
   const { user } = useAuth();
+  const { theme } = useAppTheme();
+
   const [wishlist, setwishlist] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     fetchproduct();
   }, [user]);
+
   const fetchproduct = async () => {
     if (user) {
       try {
         setIsLoading(true);
+
         const bag = await axios.get(
-          `https://myntra-clone-xj36.onrender.com/wishlist/${user._id}`
+          `http://localhost:5000/wishlist/${user._id}`
         );
+
         setwishlist(bag.data);
       } catch (error) {
         console.log(error);
-        setIsLoading(false);
       } finally {
         setIsLoading(false);
       }
     }
   };
-  const handledelete=async(itemid:any)=>{
+
+  const handledelete = async (itemid: any) => {
     try {
-      await axios.delete(`https://myntra-clone-xj36.onrender.com/wishlist/${itemid}`)
+      await axios.delete(`http://localhost:5000/wishlist/${itemid}`);
       fetchproduct();
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-   
-  }
+  };
+
   if (!user) {
     return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Wishlist</Text>
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <View
+          style={[
+            styles.header,
+            {
+              backgroundColor: theme.card,
+              borderBottomColor: theme.border,
+            },
+          ]}
+        >
+          <Text style={[styles.headerTitle, { color: theme.text }]}>
+            Wishlist
+          </Text>
         </View>
+
         <View style={styles.emptyState}>
-          <Heart size={64} color="#ff3f6c" />
-          <Text style={styles.emptyTitle}>
+          <Heart size={64} color={theme.primary} />
+
+          <Text style={[styles.emptyTitle, { color: theme.text }]}>
             Please login to view your wishlist
           </Text>
+
           <TouchableOpacity
-            style={styles.loginButton}
+            style={[styles.loginButton, { backgroundColor: theme.primary }]}
             onPress={() => router.push("/login")}
           >
             <Text style={styles.loginButtonText}>LOGIN</Text>
@@ -87,36 +87,92 @@ export default function Wishlist() {
       </View>
     );
   }
+
   if (isLoading) {
     return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#ff3f6c" />
+      <View
+        style={[
+          styles.loaderContainer,
+          { backgroundColor: theme.background },
+        ]}
+      >
+        <ActivityIndicator size="large" color={theme.primary} />
       </View>
     );
   }
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Wishlist</Text>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View
+        style={[
+          styles.header,
+          {
+            backgroundColor: theme.card,
+            borderBottomColor: theme.border,
+          },
+        ]}
+      >
+        <Text style={[styles.headerTitle, { color: theme.text }]}>
+          Wishlist
+        </Text>
       </View>
 
-      <ScrollView style={styles.content}>
-        {wishlist?.map((item:any) => (
-          <View key={item._id} style={styles.wishlistItem}>
-            <Image  source={{ uri: item.productId.images[0] }} style={styles.itemImage} />
-            <View style={styles.itemInfo}>
-              <Text style={styles.brandName}>{item.productId.brand}</Text>
-              <Text style={styles.itemName}>{item.productId.name}</Text>
-              <View style={styles.priceContainer}>
-                <Text style={styles.price}>{item.productId.price}</Text>
-                <Text style={styles.discount}>{item.productId.discount}</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.removeButton} onPress={()=>handledelete(item._id)}>
-              <Trash2 size={24} color="#ff3f6c" />
-            </TouchableOpacity>
+      <ScrollView
+        style={[styles.content, { backgroundColor: theme.background }]}
+      >
+        {wishlist?.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Heart size={64} color={theme.primary} />
+            <Text style={[styles.emptyTitle, { color: theme.text }]}>
+              Your wishlist is empty
+            </Text>
           </View>
-        ))}
+        ) : (
+          wishlist?.map((item: any) => (
+            <View
+              key={item._id}
+              style={[
+                styles.wishlistItem,
+                {
+                  backgroundColor: theme.card,
+                  borderColor: theme.border,
+                },
+              ]}
+            >
+              <Image
+                source={{ uri: item.productId?.images?.[0] }}
+                style={styles.itemImage}
+              />
+
+              <View style={styles.itemInfo}>
+                <Text style={[styles.brandName, { color: theme.mutedText }]}>
+                  {item.productId?.brand}
+                </Text>
+
+                <Text style={[styles.itemName, { color: theme.text }]}>
+                  {item.productId?.name}
+                </Text>
+
+                <View style={styles.priceContainer}>
+                  <Text style={[styles.price, { color: theme.text }]}>
+                    ₹{item.productId?.price}
+                  </Text>
+
+                  <Text style={[styles.discount, { color: theme.primary }]}>
+                    {item.productId?.discount}
+                  </Text>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={styles.removeButton}
+                onPress={() => handledelete(item._id)}
+              >
+                <Trash2 size={24} color={theme.primary} />
+              </TouchableOpacity>
+            </View>
+          ))
+        )}
       </ScrollView>
     </View>
   );
@@ -127,56 +183,59 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
   },
+
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
+
   header: {
     padding: 15,
     paddingTop: 50,
-    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
   },
+
   headerTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#3e3e3e",
   },
+
   content: {
     flex: 1,
     padding: 15,
   },
+
   emptyState: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
   },
+
   emptyTitle: {
     fontSize: 18,
-    color: "#3e3e3e",
     marginTop: 20,
     marginBottom: 20,
+    textAlign: "center",
   },
+
   loginButton: {
-    backgroundColor: "#ff3f6c",
     paddingHorizontal: 40,
     paddingVertical: 15,
     borderRadius: 10,
   },
+
   loginButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },
+
   wishlistItem: {
     flexDirection: "row",
-    backgroundColor: "#fff",
     borderRadius: 10,
     marginBottom: 15,
+    borderWidth: 1,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -187,38 +246,42 @@ const styles = StyleSheet.create({
     elevation: 5,
     overflow: "hidden",
   },
+
   itemImage: {
     width: 100,
     height: 120,
   },
+
   itemInfo: {
     flex: 1,
     padding: 15,
   },
+
   brandName: {
     fontSize: 14,
-    color: "#666",
     marginBottom: 5,
   },
+
   itemName: {
     fontSize: 16,
-    color: "#3e3e3e",
     marginBottom: 10,
   },
+
   priceContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
+
   price: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#3e3e3e",
     marginRight: 10,
   },
+
   discount: {
     fontSize: 14,
-    color: "#ff3f6c",
   },
+
   removeButton: {
     padding: 15,
     justifyContent: "center",

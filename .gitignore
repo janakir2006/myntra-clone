@@ -10,5 +10,17 @@ backend/build/
 myntra/.env
 backend/.env
 
+# Expo
+.expo/
+.expo-shared/
+
+# General
+node_modules/
+.env
+
 # Optional: Ignore other unnecessary files
 *.log
+
+# OS files
+.DS_Store
+Thumbs.db

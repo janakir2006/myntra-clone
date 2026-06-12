@@ -1,24 +1,25 @@
-import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const saveUserData = async (
   _id: string,
   name: string,
   email: string
 ) => {
-  await SecureStore.setItemAsync("userid", _id);
-  await SecureStore.setItemAsync("userName", name);
-  await SecureStore.setItemAsync("userEmail", email);
+  await AsyncStorage.setItem("userid", _id);
+  await AsyncStorage.setItem("userName", name);
+  await AsyncStorage.setItem("userEmail", email);
 };
 
 export const getUserData = async () => {
-  const _id = await SecureStore.getItemAsync("userid");
-  const name = await SecureStore.getItemAsync("userName");
-  const email = await SecureStore.getItemAsync("userEmail");
+  const _id = await AsyncStorage.getItem("userid");
+  const name = await AsyncStorage.getItem("userName");
+  const email = await AsyncStorage.getItem("userEmail");
+
   return { _id, name, email };
 };
 
 export const clearUserData = async () => {
-  await SecureStore.deleteItemAsync("userid");
-  await SecureStore.deleteItemAsync("userName");
-  await SecureStore.deleteItemAsync("userEmail");
+  await AsyncStorage.removeItem("userid");
+  await AsyncStorage.removeItem("userName");
+  await AsyncStorage.removeItem("userEmail");
 };
