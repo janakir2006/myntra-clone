@@ -1,11 +1,17 @@
-import * as Device from "expo-device";
-import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import axios from "axios";
 
 export const registerForPushNotifications = async (userId: string) => {
   try {
-    if (!Device.isDevice) {
+    if (Platform.OS === "web") {
+      console.log("Push notifications disabled on web");
+      return;
+    }
+
+    const Device = await import("expo-device");
+    const Notifications = await import("expo-notifications");
+
+    if (!Device.default?.isDevice && !Device.isDevice) {
       console.log("Push notifications require a physical device");
       return;
     }
@@ -28,11 +34,14 @@ export const registerForPushNotifications = async (userId: string) => {
     const tokenData = await Notifications.getExpoPushTokenAsync();
     const token = tokenData.data;
 
-    await axios.post("https://myntra-backend-fn7s.onrender.com/notification/register-token", {
-      userId,
-      token,
-      platform: Platform.OS,
-    });
+    await axios.post(
+      "https://myntra-backend-fn7s.onrender.com/notification/register-token",
+      {
+        userId,
+        token,
+        platform: Platform.OS,
+      }
+    );
 
     console.log("Push token registered:", token);
   } catch (error) {
