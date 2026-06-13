@@ -23,7 +23,7 @@ const categories = [
     id: 2,
     name: "Women",
     image:
-      "https://images.unsplash.com/photo-1618244972963-dbad0c4abf18?w=500&auto=format&fit=crop",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSna3xwLqHAMeiqV8uJOI6eRcAs6Agz-nJE8Fp55Vc4fXdJFHIbr0NSbTft&s=10",
   },
   {
     id: 3,
