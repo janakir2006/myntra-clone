@@ -1,5 +1,4 @@
 import {
-  StyleSheet,
   Image,
   View,
   Text,
@@ -7,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  StyleSheet,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
@@ -19,28 +19,52 @@ export default function TabTwoScreen() {
   const { theme } = useAppTheme();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(
-    null
-  );
   const [isLoading, setIsLoading] = useState(false);
-  const [categories, setcategories] = useState<any>(null);
+  const [products, setProducts] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchproduct = async () => {
+    const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const cat = await axios.get("https://myntra-backend-fn7s.onrender.com/category");
-        setcategories(cat.data);
+
+        const response = await axios.get(
+          "https://myntra-backend-fn7s.onrender.com/product"
+        );
+
+        setProducts(response.data);
       } catch (error) {
-        console.log(error);
+        console.log("Error fetching products:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchproduct();
+    fetchProducts();
   }, []);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery("");
+  };
+
+  const filteredProducts =
+    searchQuery.trim() === ""
+      ? products
+      : products.filter(
+          (product: any) =>
+            product.name
+              ?.toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            product.brand
+              ?.toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            product.category
+              ?.toLowerCase()
+              .includes(searchQuery.toLowerCase())
+        );
 
   if (isLoading) {
     return (
@@ -55,96 +79,15 @@ export default function TabTwoScreen() {
     );
   }
 
-  if (!categories) {
-    return (
-      <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <Text style={{ color: theme.text }}>Categories not found</Text>
-      </View>
-    );
-  }
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    setSelectedCategory(null);
-    setSelectedSubcategory(null);
-  };
-
-  const clearSearch = () => {
-    setSearchQuery("");
-    setSelectedCategory(null);
-    setSelectedSubcategory(null);
-  };
-
-  const handleCategorySelect = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-    setSelectedSubcategory(null);
-    setSearchQuery("");
-  };
-
-  const handleSubcategorySelect = (subcategoryId: string) => {
-    setSelectedSubcategory(subcategoryId);
-    setSearchQuery("");
-  };
-
-  const filtercategories = categories?.filter(
-    (category: any) =>
-      category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      category.subcategory?.some((subcategory: any) =>
-        subcategory.toLowerCase().includes(searchQuery.toLowerCase())
-      ) ||
-      category.productId?.some(
-        (product: any) =>
-          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.brand.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-  );
-
-  const selectedcategorydata = selectedCategory
-    ? categories?.find((cat: any) => cat._id === selectedCategory)
-    : null;
-
-  const renderProducts = (products: any) => {
-    return products?.map((product: any) => (
-      <TouchableOpacity
-        key={product._id}
-        style={[
-          styles.productCard,
-          {
-            backgroundColor: theme.card,
-            borderColor: theme.border,
-          },
-        ]}
-        onPress={() => router.push(`/product/${product._id}`)}
-      >
-        <Image
-          source={{ uri: product.images?.[0] }}
-          style={styles.productImage}
-        />
-
-        <View style={styles.productInfo}>
-          <Text style={[styles.brandName, { color: theme.mutedText }]}>
-            {product.brand}
-          </Text>
-
-          <Text style={[styles.productName, { color: theme.text }]}>
-            {product.name}
-          </Text>
-
-          <View style={styles.priceRow}>
-            <Text style={[styles.price, { color: theme.text }]}>
-              ₹{product.price}
-            </Text>
-            <Text style={[styles.discount, { color: theme.primary }]}>
-              {product.discount}
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    ));
-  };
-
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.background,
+        },
+      ]}
+    >
       <View
         style={[
           styles.header,
@@ -154,8 +97,15 @@ export default function TabTwoScreen() {
           },
         ]}
       >
-        <Text style={[styles.headerTitle, { color: theme.text }]}>
-          Categories
+        <Text
+          style={[
+            styles.headerTitle,
+            {
+              color: theme.text,
+            },
+          ]}
+        >
+          Search Products
         </Text>
       </View>
 
@@ -177,17 +127,26 @@ export default function TabTwoScreen() {
             },
           ]}
         >
-          <Search size={20} color={theme.mutedText} style={styles.searchIcon} />
+          <Search
+            size={20}
+            color={theme.mutedText}
+            style={styles.searchIcon}
+          />
 
           <TextInput
-            style={[styles.searchInput, { color: theme.text }]}
-            placeholder="Search for products, brands and more"
+            style={[
+              styles.searchInput,
+              {
+                color: theme.text,
+              },
+            ]}
+            placeholder="Search products, brands, categories..."
             placeholderTextColor={theme.mutedText}
             value={searchQuery}
             onChangeText={handleSearch}
           />
 
-          {searchQuery !== "" && (
+          {searchQuery.length > 0 && (
             <TouchableOpacity onPress={clearSearch}>
               <X size={20} color={theme.mutedText} />
             </TouchableOpacity>
@@ -196,120 +155,107 @@ export default function TabTwoScreen() {
       </View>
 
       <ScrollView style={styles.content}>
-        {!selectedCategory && (
-          <View style={styles.categoriesGrid}>
-            {filtercategories?.map((category: any) => (
-              <TouchableOpacity
-                key={category._id}
-                style={[
-                  styles.categoryCard,
-                  {
-                    backgroundColor: theme.card,
-                    borderColor: theme.border,
-                  },
-                ]}
-                onPress={() => handleCategorySelect(category._id)}
-              >
-                <Image
-                  source={{ uri: category.image }}
-                  style={styles.categoryImage}
-                />
+        <View style={styles.productsGrid}>
+          {filteredProducts.map((product: any) => (
+            <TouchableOpacity
+              key={product._id}
+              style={[
+                styles.productCard,
+                {
+                  backgroundColor: theme.card,
+                  borderColor: theme.border,
+                },
+              ]}
+              onPress={() =>
+                router.push(`/product/${product._id}` as any)
+              }
+            >
+              <Image
+                source={{
+                  uri:
+                    product.images?.[0] ||
+                    "https://via.placeholder.com/300",
+                }}
+                style={styles.productImage}
+              />
 
-                <View style={styles.categoryInfo}>
-                  <Text style={[styles.categoryName, { color: theme.text }]}>
-                    {category.name}
+              <View style={styles.productInfo}>
+                <Text
+                  style={[
+                    styles.brandName,
+                    {
+                      color: theme.mutedText,
+                    },
+                  ]}
+                >
+                  {product.brand}
+                </Text>
+
+                <Text
+                  style={[
+                    styles.productName,
+                    {
+                      color: theme.text,
+                    },
+                  ]}
+                >
+                  {product.name}
+                </Text>
+
+                <Text
+                  style={[
+                    styles.subcategoryText,
+                    {
+                      color: theme.primary,
+                    },
+                  ]}
+                >
+                  {product.category}
+                </Text>
+
+                <View style={styles.priceRow}>
+                  <Text
+                    style={[
+                      styles.price,
+                      {
+                        color: theme.text,
+                      },
+                    ]}
+                  >
+                    ₹{product.price}
                   </Text>
 
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <View style={styles.subcategories}>
-                      {category?.subcategory?.map((sub: any, index: any) => (
-                        <TouchableOpacity
-                          key={index}
-                          style={[
-                            styles.subcategoryTag,
-                            { backgroundColor: theme.surface },
-                          ]}
-                          onPress={() => handleSubcategorySelect(sub)}
-                        >
-                          <Text
-                            style={[
-                              styles.subcategoryText,
-                              { color: theme.mutedText },
-                            ]}
-                          >
-                            {sub}
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  </ScrollView>
+                  <Text
+                    style={[
+                      styles.discount,
+                      {
+                        color: theme.primary,
+                      },
+                    ]}
+                  >
+                    {product.discount}
+                  </Text>
                 </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-        {selectedcategorydata && (
-          <View style={styles.categoryDetail}>
-            <View style={styles.categoryHeader}>
-              <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => setSelectedCategory(null)}
-              >
-                <Text style={[styles.backButtonText, { color: theme.primary }]}>
-                  ← Back to Categories
-                </Text>
-              </TouchableOpacity>
-
-              <Text style={[styles.categoryTitle, { color: theme.text }]}>
-                {selectedcategorydata.name}
-              </Text>
-            </View>
-
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.subcategoriesScroll}
+        {filteredProducts.length === 0 && (
+          <View
+            style={{
+              alignItems: "center",
+              padding: 40,
+            }}
+          >
+            <Text
+              style={{
+                color: theme.text,
+                fontSize: 16,
+              }}
             >
-              {selectedcategorydata.subcategory?.map(
-                (sub: any, index: any) => {
-                  const isSelected = selectedSubcategory === sub;
-
-                  return (
-                    <TouchableOpacity
-                      key={index}
-                      style={[
-                        styles.subcategoryButton,
-                        {
-                          backgroundColor: isSelected
-                            ? theme.primary
-                            : theme.surface,
-                          borderColor: isSelected
-                            ? theme.primary
-                            : theme.border,
-                        },
-                      ]}
-                      onPress={() => handleSubcategorySelect(sub)}
-                    >
-                      <Text
-                        style={[
-                          styles.subcategoryButtonText,
-                          {
-                            color: isSelected ? "#fff" : theme.text,
-                          },
-                        ]}
-                      >
-                        {sub}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                }
-              )}
-            </ScrollView>
-
-            <View style={styles.productsGrid}>
-              {renderProducts(selectedcategorydata?.productId)}
-            </View>
+              No products found
+            </Text>
           </View>
         )}
       </ScrollView>
