@@ -141,7 +141,13 @@ export default function Home() {
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {categoryList.map((category) => (
-            <TouchableOpacity key={category.id} style={styles.categoryCard}>
+            <TouchableOpacity key={category.id} style={styles.categoryCard} onPress={() => router.push({
+    pathname: "/category/[name]",
+    params: {
+      name: category.name,
+    },
+  })
+}>
               <Image
                 source={{ uri: category.image }}
                 style={styles.categoryImage}
