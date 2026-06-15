@@ -158,14 +158,16 @@ const styles = StyleSheet.create({
   },
 
   formContainer: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 20,
-    marginTop: "60%",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    borderWidth: 1,
-  },
+  flex: 1,
+  justifyContent: "center",
+  padding: 10,
+  maxWidth: 450,
+  width: "100%",
+  alignSelf: "center",
+  borderTopLeftRadius: 30,
+  borderTopRightRadius: 30,
+  borderWidth: 1,
+},
 
   title: {
     fontSize: 28,
